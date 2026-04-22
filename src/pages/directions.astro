@@ -132,18 +132,23 @@ const branches = [
   const tabs = document.querySelectorAll<HTMLButtonElement>('.tab-btn');
   const panels = document.querySelectorAll<HTMLElement>('.tab-panel');
 
-  tabs.forEach((tab) => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => {
-        t.classList.remove('border-brand', 'text-brand');
-        t.classList.add('border-transparent', 'text-gray-400');
-      });
-      tab.classList.add('border-brand', 'text-brand');
-      tab.classList.remove('border-transparent', 'text-gray-400');
-
-      const target = tab.dataset.tab;
-      panels.forEach(p => p.classList.add('hidden'));
-      document.getElementById(`panel-${target}`)?.classList.remove('hidden');
+  function activate(id: string) {
+    tabs.forEach(t => {
+      const isTarget = t.dataset.tab === id;
+      t.classList.toggle('border-brand', isTarget);
+      t.classList.toggle('text-brand', isTarget);
+      t.classList.toggle('border-transparent', !isTarget);
+      t.classList.toggle('text-gray-400', !isTarget);
     });
+    panels.forEach(p => p.classList.add('hidden'));
+    document.getElementById(`panel-${id}`)?.classList.remove('hidden');
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => activate(tab.dataset.tab!));
   });
+
+  // URL 해시로 탭 선택
+  const hash = location.hash.replace('#', '');
+  if (hash) activate(hash);
 </script>
