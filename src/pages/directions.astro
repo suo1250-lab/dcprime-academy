@@ -5,20 +5,20 @@ const branches = [
   {
     id: 'neunggok',
     name: '능곡관',
+    fullName: '대치프라임학원 (능곡관)',
+    subjects: '초등고학년 ~ 고3 | 수학·영어·과학·국어',
     address: '주소를 입력해 주세요',
     phone: '031-313-0979',
     mapUrl: 'https://naver.me/Grexh0o5',
-    lat: 37.4,
-    lng: 126.9,
   },
   {
     id: 'janggok',
     name: '장곡관',
+    fullName: '대치프라임장곡학원 (장곡관)',
+    subjects: '초등고학년 ~ 고3 | 수학·영어·과학·국어',
     address: '주소를 입력해 주세요',
     phone: '031-804-2495',
     mapUrl: 'https://naver.me/FvQJ6L7k',
-    lat: 37.4,
-    lng: 126.9,
   },
 ];
 ---
@@ -72,8 +72,17 @@ const branches = [
           </div>
         </div>
 
+        <!-- 관 안내 -->
+        <div class="container mx-auto px-4 pt-10 max-w-4xl">
+          <div class="bg-brand-light rounded-2xl p-6 mb-8">
+            <p class="text-xs font-semibold text-brand uppercase tracking-wide mb-1">DCPRIME</p>
+            <h2 class="text-lg font-bold text-gray-900 mb-1">{b.fullName}</h2>
+            <p class="text-sm text-gray-500">{b.subjects}</p>
+          </div>
+        </div>
+
         <!-- 주소 / 전화 카드 -->
-        <div class="container mx-auto px-4 py-10 max-w-4xl">
+        <div class="container mx-auto px-4 pb-10 max-w-4xl">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-10">
 
             <div class="border border-gray-200 rounded-2xl p-6 flex flex-col items-center text-center gap-3">
