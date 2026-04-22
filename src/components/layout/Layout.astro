@@ -30,32 +30,5 @@ const { title, description } = Astro.props;
     </main>
     <Footer />
 
-    <script>
-      function spawnTrail(x: number, y: number) {
-        const el = document.createElement('div');
-        el.style.cssText = `
-          position:fixed;left:${x}px;top:${y}px;
-          width:6px;height:6px;border-radius:50%;
-          background:rgba(116,123,162,0.6);
-          pointer-events:none;z-index:9999;
-          transform:translate(-50%,-50%);
-          transition:opacity 0.6s ease, transform 0.6s ease;
-        `;
-        document.body.appendChild(el);
-        requestAnimationFrame(() => {
-          el.style.opacity = '0';
-          el.style.transform = 'translate(-50%,-50%) scale(2)';
-        });
-        setTimeout(() => el.remove(), 600);
-      }
-
-      let last = 0;
-      document.addEventListener('mousemove', (e) => {
-        const now = Date.now();
-        if (now - last < 30) return;
-        last = now;
-        spawnTrail(e.clientX, e.clientY);
-      });
-    </script>
   </body>
 </html>
