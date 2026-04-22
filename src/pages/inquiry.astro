@@ -162,11 +162,44 @@ import Layout from '../components/layout/Layout.astro';
 </Layout>
 
 <script>
+  import { supabase } from '../lib/supabase';
+
   // 폼 제출
   const form = document.getElementById('inquiry-form') as HTMLFormElement;
   const successMsg = document.getElementById('success-msg');
-  form?.addEventListener('submit', (e) => {
+  const submitBtn = form?.querySelector('button[type="submit"]') as HTMLButtonElement;
+
+  form?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '처리 중...'; }
+
+    const fd = new FormData(form);
+    const branches = (fd.getAll('branch') as string[]).join(', ');
+    const studentPhone = `${fd.get('student_phone_prefix')}-${fd.get('student_phone_mid')}-${fd.get('student_phone_end')}`;
+    const parentPhoneMid = fd.get('parent_phone_mid') as string;
+    const parentPhone = parentPhoneMid
+      ? `${fd.get('parent_phone_prefix')}-${parentPhoneMid}-${fd.get('parent_phone_end')}`
+      : null;
+
+    const { error } = await supabase.from('inquiries').insert({
+      student_name: fd.get('student_name') as string,
+      student_phone: studentPhone,
+      parent_name: (fd.get('parent_name') as string) || null,
+      parent_phone: parentPhone,
+      school_name: (fd.get('school_name') as string) || null,
+      track: (fd.get('track') as string) || null,
+      grade: (fd.get('grade') as string) || null,
+      branch: branches || null,
+      agree_privacy: fd.get('agree_privacy') === 'on',
+      agree_marketing: fd.get('agree_marketing') === 'on',
+    });
+
+    if (error) {
+      alert('신청 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '신청'; }
+      return;
+    }
+
     form.style.display = 'none';
     successMsg?.classList.remove('hidden');
   });
