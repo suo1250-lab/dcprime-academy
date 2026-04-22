@@ -1,10 +1,117 @@
 ---
 import Layout from '../components/layout/Layout.astro';
+
+const years = ['2026 대입', '2025 대입', '2024 대입', '2023 대입', '2022 대입', '2021 대입', '2020 대입', '고입 실적'];
+
+const data: Record<string, { school: string; name: string; university: string; dept: string }[]> = {
+  '2026 대입': [
+    { school: '양정고', name: '김OO', university: '서울대', dept: '컴퓨터공학과' },
+    { school: '진명여고', name: '이OO', university: '서울대', dept: '인문계열' },
+    { school: '목동고', name: '박OO', university: '연세대', dept: '경영학과' },
+    { school: '대일고', name: '조OO', university: '연세대', dept: '공과대학' },
+    { school: '양정고', name: '강OO', university: '고려대', dept: '법학과' },
+    { school: '등촌고', name: '최OO', university: '고려대', dept: '경제학과' },
+    { school: '한서고', name: '윤OO', university: '한양대', dept: '의과대학' },
+    { school: '관악고', name: '장OO', university: '한양대', dept: '컴퓨터소프트웨어학과' },
+    { school: '금옥여고', name: '허OO', university: '이화여대', dept: '국어국문학과' },
+    { school: '경복여고', name: '서OO', university: '이화여대', dept: '물리학과' },
+    { school: '목동고', name: '심OO', university: '중앙대', dept: '의과대학' },
+    { school: '양정고', name: '장OO', university: '경북대', dept: '치의예과' },
+  ],
+  '2025 대입': [],
+  '2024 대입': [],
+  '2023 대입': [],
+  '2022 대입': [],
+  '2021 대입': [],
+  '2020 대입': [],
+  '고입 실적': [],
+};
 ---
 
-<Layout title="합격/성적 실적 - 대치프라임" description="대치프라임학원 합격 및 성적 실적을 확인하세요.">
-  <div class="container mx-auto px-4 py-16 min-h-screen">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">합격/성적 실적</h1>
-    <p class="text-gray-500">내용을 준비 중입니다.</p>
+<Layout title="명예의 전당 - 대치프라임" description="대치프라임 합격자 명예의 전당입니다.">
+  <div class="min-h-screen bg-white">
+
+    <!-- 타이틀 -->
+    <div class="py-14 text-center border-b border-gray-100">
+      <h1 class="text-4xl font-bold text-gray-900">명예의 전당</h1>
+    </div>
+
+    <!-- 연도 탭 -->
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+      <div id="year-tabs" class="grid grid-cols-2 sm:grid-cols-4 border border-gray-200 rounded-sm overflow-hidden mb-10">
+        {years.map((y, i) => (
+          <button
+            data-year={y}
+            class={`year-tab py-4 text-sm font-medium border-b border-r border-gray-200 transition-colors last:border-r-0
+              ${i === 0 ? 'bg-brand text-white' : 'bg-white text-gray-500 hover:bg-gray-50'}`}
+          >
+            {y}
+          </button>
+        ))}
+      </div>
+
+      <!-- 테이블 영역 -->
+      <div id="table-area">
+        {years.map((y) => {
+          const rows = data[y] ?? [];
+          const half = Math.ceil(rows.length / 2);
+          const left = rows.slice(0, half);
+          const right = rows.slice(half);
+          return (
+            <div data-panel={y} class={`year-panel ${y !== '2026 대입' ? 'hidden' : ''}`}>
+              {rows.length === 0 ? (
+                <p class="text-center text-gray-400 py-20 text-sm">데이터를 준비 중입니다.</p>
+              ) : (
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {[left, right].map((group) => (
+                    <table class="w-full text-sm border-t-2 border-gray-800">
+                      <thead>
+                        <tr class="border-b border-gray-200">
+                          <th class="py-3 px-3 text-center font-semibold text-gray-700 w-1/4">학교</th>
+                          <th class="py-3 px-3 text-center font-semibold text-gray-700 w-1/6">이름</th>
+                          <th class="py-3 px-3 text-center font-semibold text-gray-700 w-1/4">대학</th>
+                          <th class="py-3 px-3 text-center font-semibold text-gray-700">학과</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {group.map((r) => (
+                          <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-3 px-3 text-center text-gray-600">{r.school}</td>
+                            <td class="py-3 px-3 text-center text-gray-600">{r.name}</td>
+                            <td class="py-3 px-3 text-center text-gray-700 font-medium">{r.university}</td>
+                            <td class="py-3 px-3 text-center text-gray-600">{r.dept}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
   </div>
 </Layout>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.year-tab');
+  const panels = document.querySelectorAll<HTMLElement>('.year-panel');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => {
+        t.classList.remove('bg-brand', 'text-white');
+        t.classList.add('bg-white', 'text-gray-500');
+      });
+      tab.classList.add('bg-brand', 'text-white');
+      tab.classList.remove('bg-white', 'text-gray-500');
+
+      const year = tab.dataset.year;
+      panels.forEach(p => p.classList.add('hidden'));
+      document.querySelector(`[data-panel="${year}"]`)?.classList.remove('hidden');
+    });
+  });
+</script>
