@@ -1,0 +1,91 @@
+---
+// src/components/sections/PainPointsSection.astro
+import SectionTitle from '../ui/SectionTitle.astro';
+import Button from '../ui/Button.astro';
+---
+
+<section class="py-16 md:py-24 bg-primary-dark-base">
+  <div class="container mx-auto px-4">
+    <SectionTitle
+      title="학부모님, 혹시 이런 고민으로 밤잠을 설치고 계신가요?"
+      subtitle="대치프라임은 학부모님의 모든 고민을 해결하고, 자녀의 성공적인 미래를 위한 명확한 해답을 제시합니다."
+    />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+      <!-- Pain Point 1 -->
+      <div class="bg-primary-dark-base p-6 rounded-lg shadow-lg border border-secondary-light-gray/20 flex items-start space-x-4">
+        <div class="flex-shrink-0 text-brand">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9.228a4.5 4.5 0 116.364 0L12 12.364l-2.592-2.592a4.5 4.5 0 01-1.68-3.218v0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-neutral-white text-xl font-semibold mb-2">아이가 아무리 노력해도 성적이 오르지 않아요.</h3>
+          <p class="text-secondary-medium-gray text-base">반복되는 노력에도 불구하고 성적 향상이 더딘 자녀를 보며 답답함을 느끼시나요?</p>
+        </div>
+      </div>
+
+      <!-- Pain Point 2 -->
+      <div class="bg-primary-dark-base p-6 rounded-lg shadow-lg border border-secondary-light-gray/20 flex items-start space-x-4">
+        <div class="flex-shrink-0 text-brand">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-neutral-white text-xl font-semibold mb-2">변화하는 입시 제도, 어떻게 준비해야 할지 막막해요.</h3>
+          <p class="text-secondary-medium-gray text-base">복잡하고 예측 불가능한 입시 환경 속에서 올바른 전략을 세우기 어려우신가요?</p>
+        </div>
+      </div>
+
+      <!-- Pain Point 3 -->
+      <div class="bg-primary-dark-base p-6 rounded-lg shadow-lg border border-secondary-light-gray/20 flex items-start space-x-4">
+        <div class="flex-shrink-0 text-brand">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-neutral-white text-xl font-semibold mb-2">우리 아이에게 맞는 학습 전략을 찾기 어려워요.</h3>
+          <p class="text-secondary-medium-gray text-base">획일적인 교육 방식이 아닌, 자녀에게 최적화된 맞춤형 학습법을 찾고 계신가요?</p>
+        </div>
+      </div>
+
+      <!-- Pain Point 4 -->
+      <div class="bg-primary-dark-base p-6 rounded-lg shadow-lg border border-secondary-light-gray/20 flex items-start space-x-4">
+        <div class="flex-shrink-0 text-brand">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-neutral-white text-xl font-semibold mb-2">학원만 보내면 끝? 체계적인 관리가 부족하다고 느껴요.</h3>
+          <p class="text-secondary-medium-gray text-base">단순히 수업만 듣는 것을 넘어, 빈틈없는 학습 관리를 원하시나요?</p>
+        </div>
+      </div>
+
+      <!-- Pain Point 5 -->
+      <div class="bg-primary-dark-base p-6 rounded-lg shadow-lg border border-secondary-light-gray/20 flex items-start space-x-4">
+        <div class="flex-shrink-0 text-brand">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-neutral-white text-xl font-semibold mb-2">비싼 학원비, 과연 투자한 만큼의 결과가 나올까요?</h3>
+          <p class="text-secondary-medium-gray text-base">교육 투자에 대한 확실한 성과와 만족스러운 결과를 기대하시나요?</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-12">
+      <Button href="/inquiry" variant="primary" size="large">
+        무료 성적 분석으로 고민 해결하기 (선착순 마감, 24시간 내 결과)
+      </Button>
+      <div class="mt-4 text-secondary-medium-gray text-sm">
+        어떤 의무도, 비용도 발생하지 않습니다.
+      </div>
+    </div>
+  </div>
+</section>

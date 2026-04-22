@@ -1,0 +1,217 @@
+---
+import Layout from '../components/layout/Layout.astro';
+---
+
+<Layout title="상담 신청 - 대치프라임" description="대치프라임 상담을 신청하세요.">
+  <div class="min-h-screen bg-gray-50 py-16 px-4">
+    <div class="max-w-lg mx-auto bg-white rounded-2xl shadow-lg p-8">
+
+      <h1 class="text-2xl font-bold text-gray-900 mb-2">상담 신청</h1>
+      <p class="text-sm text-gray-500 mb-6">
+        신청하시면 설명회/강좌 안내 문자를 수신할 수 있습니다.
+      </p>
+
+      <form id="inquiry-form" class="space-y-6">
+
+        <!-- 학생 이름 -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-800 mb-1.5">학생 이름</label>
+          <input type="text" name="student_name" placeholder="이름을 입력해 주세요." required
+            class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent" />
+        </div>
+
+        <!-- 학생 번호 -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-800 mb-1.5">학생 번호</label>
+          <div class="flex gap-1.5">
+            <select name="student_phone_prefix" class="w-20 min-h-[44px] border border-gray-300 rounded-lg px-2 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand">
+              <option>010</option>
+              <option>011</option>
+              <option>016</option>
+              <option>017</option>
+              <option>019</option>
+            </select>
+            <input type="tel" name="student_phone_mid" placeholder="1234" maxlength="4" inputmode="numeric"
+              class="flex-1 min-w-0 min-h-[44px] border border-gray-300 rounded-lg px-3 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand" />
+            <input type="tel" name="student_phone_end" placeholder="5678" maxlength="4" inputmode="numeric"
+              class="flex-1 min-w-0 min-h-[44px] border border-gray-300 rounded-lg px-3 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand" />
+          </div>
+        </div>
+
+        <!-- 학부모 이름 -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-800 mb-1.5">학부모 이름</label>
+          <input type="text" name="parent_name" placeholder="이름을 입력해 주세요."
+            class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand" />
+        </div>
+
+        <!-- 학부모 번호 -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-800 mb-1.5">학부모 번호</label>
+          <div class="flex gap-1.5">
+            <select name="parent_phone_prefix" class="w-20 min-h-[44px] border border-gray-300 rounded-lg px-2 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand">
+              <option>010</option>
+              <option>011</option>
+              <option>016</option>
+              <option>017</option>
+              <option>019</option>
+            </select>
+            <input type="tel" name="parent_phone_mid" placeholder="1234" maxlength="4" inputmode="numeric"
+              class="flex-1 min-w-0 min-h-[44px] border border-gray-300 rounded-lg px-3 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand" />
+            <input type="tel" name="parent_phone_end" placeholder="5678" maxlength="4" inputmode="numeric"
+              class="flex-1 min-w-0 min-h-[44px] border border-gray-300 rounded-lg px-3 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand" />
+          </div>
+        </div>
+
+        <!-- 학교 검색 -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-800 mb-1.5">학교</label>
+          <div class="relative">
+            <input id="school-input" type="text" name="school_name" placeholder="학교명을 2자 이상 입력해 주세요." autocomplete="off"
+              class="w-full border border-gray-300 rounded-lg px-4 py-3 pr-10 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand" />
+            <svg class="absolute right-3 top-3.5 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+            </svg>
+            <ul id="school-list" class="hidden absolute z-20 w-full bg-white border border-gray-200 rounded-lg mt-1 shadow-lg max-h-40 md:max-h-52 overflow-y-auto text-sm"></ul>
+          </div>
+        </div>
+
+        <!-- 계열 / 학년 -->
+        <div class="flex gap-3">
+          <div class="flex-1">
+            <label class="block text-sm font-semibold text-gray-800 mb-1.5">계열</label>
+            <select name="track" class="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand">
+              <option value="" disabled selected>계열</option>
+              <option>인문</option>
+              <option>자연</option>
+              <option>예체능</option>
+              <option>기타(특성화)</option>
+              <option>계열없음</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label class="block text-sm font-semibold text-gray-800 mb-1.5">학년</label>
+            <select name="grade" class="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand">
+              <option value="" disabled selected>학년</option>
+              <option>초4</option><option>초5</option><option>초6</option>
+              <option>중1</option><option>중2</option><option>중3</option>
+              <option>고1</option><option>고2</option><option>고3</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 알림 받을 분원 -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-800 mb-2">알림 받을 분원</label>
+          <div class="flex gap-6 flex-wrap">
+            <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+              <input type="checkbox" name="branch" value="능곡관" class="w-4 h-4 accent-gray-800" />
+              능곡관
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+              <input type="checkbox" name="branch" value="장곡관" class="w-4 h-4 accent-gray-800" />
+              장곡관
+            </label>
+          </div>
+          <p class="text-xs text-gray-400 mt-1.5">* 중복 선택 가능합니다.</p>
+        </div>
+
+        <hr class="border-gray-200" />
+
+        <!-- 개인정보 동의 -->
+        <div class="space-y-4">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" name="agree_privacy" required class="mt-0.5 w-4 h-4 accent-gray-800 flex-shrink-0" />
+            <div>
+              <p class="text-sm font-semibold text-gray-800">개인정보 수집·이용 동의 <span class="text-red-500">(필수)</span></p>
+              <p class="text-xs text-gray-500 mt-1">귀하는 본 내용에 동의하지 않을 권리가 있습니다. 다만, 동의를 거부할 경우 관련 정보 제공이 불가합니다.</p>
+            </div>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" name="agree_marketing" class="mt-0.5 w-4 h-4 accent-gray-800 flex-shrink-0" />
+            <div>
+              <p class="text-sm font-semibold text-gray-800">광고성 수신 동의 <span class="text-gray-400">(선택)</span></p>
+              <p class="text-xs text-gray-500 mt-1">귀하는 본 내용에 동의하지 않을 권리가 있습니다. 다만, 동의를 거부할 경우 혜택 및 이벤트 내용이 전송되지 않습니다.</p>
+            </div>
+          </label>
+        </div>
+
+        <p class="text-xs text-gray-400">본 수집 정보는 강좌/컨설팅 모집 안내 목적에 한하여 사용되며, 그 외 마케팅 목적으로는 활용되지 않습니다.</p>
+
+        <!-- 제출 버튼 -->
+        <button type="submit"
+          class="w-full bg-gray-900 text-white text-base font-semibold py-4 rounded-xl hover:bg-gray-700 transition-colors">
+          신청
+        </button>
+
+      </form>
+
+      <!-- 완료 메시지 -->
+      <div id="success-msg" class="hidden text-center py-12">
+        <div class="text-5xl mb-4">✅</div>
+        <h2 class="text-xl font-bold text-gray-900 mb-2">신청이 완료되었습니다</h2>
+        <p class="text-sm text-gray-500">24시간 내에 담당자가 연락드리겠습니다.</p>
+        <div class="mt-6 flex flex-col gap-3">
+          <a href="tel:031-313-0979" class="text-sm text-gray-700 hover:text-brand">📞 능곡관 031.313.0979</a>
+          <a href="tel:031-804-24950" class="text-sm text-gray-700 hover:text-brand">📞 장곡관 031.8042.4950</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // 폼 제출
+  const form = document.getElementById('inquiry-form') as HTMLFormElement;
+  const successMsg = document.getElementById('success-msg');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    form.style.display = 'none';
+    successMsg?.classList.remove('hidden');
+  });
+
+  // 학교 검색 (NEIS 오픈API)
+  const schoolInput = document.getElementById('school-input') as HTMLInputElement;
+  const schoolList = document.getElementById('school-list') as HTMLUListElement;
+  let debounceTimer: ReturnType<typeof setTimeout>;
+
+  schoolInput?.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const q = schoolInput.value.trim();
+    if (q.length < 2) { schoolList.classList.add('hidden'); return; }
+
+    debounceTimer = setTimeout(async () => {
+      try {
+        const url = `https://open.neis.go.kr/hub/schoolInfo?Type=json&pSize=10&SCHUL_NM=${encodeURIComponent(q)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const schools = data?.schoolInfo?.[1]?.row ?? [];
+
+        schoolList.innerHTML = '';
+        if (schools.length === 0) {
+          schoolList.innerHTML = '<li class="px-4 py-3 text-gray-400">검색 결과가 없습니다.</li>';
+        } else {
+          schools.forEach((s: any) => {
+            const li = document.createElement('li');
+            li.className = 'px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0';
+            li.textContent = `${s.SCHUL_NM} / ${s.LCTN_SC_NM}`;
+            li.addEventListener('click', () => {
+              schoolInput.value = s.SCHUL_NM;
+              schoolList.classList.add('hidden');
+            });
+            schoolList.appendChild(li);
+          });
+        }
+        schoolList.classList.remove('hidden');
+      } catch {
+        schoolList.innerHTML = '<li class="px-4 py-3 text-gray-400">검색 중 오류가 발생했습니다.</li>';
+        schoolList.classList.remove('hidden');
+      }
+    }, 300);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!schoolInput.contains(e.target as Node)) schoolList.classList.add('hidden');
+  });
+</script>

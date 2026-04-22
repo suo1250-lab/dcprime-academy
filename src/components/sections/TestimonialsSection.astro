@@ -1,0 +1,64 @@
+---
+// src/components/sections/TestimonialsSection.astro
+import SectionTitle from '../ui/SectionTitle.astro';
+import Button from '../ui/Button.astro';
+---
+
+<section class="py-16 md:py-24 bg-primary-dark-base">
+  <div class="container mx-auto px-4">
+    <SectionTitle
+      title="대치프라임, 학부모님과 학생들이 직접 경험한 놀라운 변화"
+      subtitle="수많은 성공 사례가 대치프라임의 교육 철학을 증명합니다."
+    />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+      <!-- Testimonial 1 -->
+      <div class="bg-primary-dark-base p-6 rounded-lg shadow-lg border border-secondary-light-gray/20">
+        <p class="text-neutral-white text-base italic mb-4">
+          "아이가 수학을 너무 어려워했는데, 대치프라임에서 1:1 관리받고 3개월 만에 3등급에서 1등급으로 올랐어요. 무료 성적 분석이 정말 큰 도움이 됐습니다!"
+        </p>
+        <div class="flex items-center">
+          <img src="/images/avatar-placeholder-1.jpg" alt="학부모 박OO님" class="w-12 h-12 rounded-full object-cover mr-4" />
+          <div>
+            <p class="text-brand font-semibold">학부모 박OO님</p>
+            <p class="text-secondary-medium-gray text-sm">고2 자녀</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimonial 2 -->
+      <div class="bg-primary-dark-base p-6 rounded-lg shadow-lg border border-secondary-light-gray/20">
+        <p class="text-neutral-white text-base italic mb-4">
+          "복잡한 입시 제도 때문에 막막했는데, 대치프라임 입시 전략팀 덕분에 우리 아이에게 맞는 최적의 로드맵을 찾았어요. 덕분에 원하는 대학에 합격했습니다."
+        </p>
+        <div class="flex items-center">
+          <img src="/images/avatar-placeholder-2.jpg" alt="학부모 김OO님" class="w-12 h-12 rounded-full object-cover mr-4" />
+          <div>
+            <p class="text-brand font-semibold">학부모 김OO님</p>
+            <p class="text-secondary-medium-gray text-sm">고3 자녀</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimonial 3 -->
+      <div class="bg-primary-dark-base p-6 rounded-lg shadow-lg border border-secondary-light-gray/20">
+        <p class="text-neutral-white text-base italic mb-4">
+          "선생님들의 열정적인 강의와 꼼꼼한 관리 덕분에 국어 성적이 수직 상승했어요. 이제 비문학이 두렵지 않습니다! 대치프라임 최고!"
+        </p>
+        <div class="flex items-center">
+          <img src="/images/avatar-placeholder-3.jpg" alt="학생 이OO" class="w-12 h-12 rounded-full object-cover mr-4" />
+          <div>
+            <p class="text-brand font-semibold">학생 이OO</p>
+            <p class="text-secondary-medium-gray text-sm">고1 재원생</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-12">
+      <Button href="/results" variant="secondary" size="large">
+        더 많은 성공 후기와 변화 스토리 확인하기
+      </Button>
+    </div>
+  </div>
+</section>
