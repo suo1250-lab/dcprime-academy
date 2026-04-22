@@ -4,54 +4,32 @@ import Layout from '../components/layout/Layout.astro';
 const subjects = ['전체', '수학', '영어', '과학', '국어'];
 
 const faculty = [
-  {
-    subject: '수학',
-    name: '강사명',
-    tagline: '시작부터 끝까지\n수학은 누구나',
-    image: '/images/faculty-placeholder-1.jpg',
-  },
-  {
-    subject: '수학',
-    name: '강사명',
-    tagline: '수학,\n생각의 힘을\n키우다',
-    image: '/images/faculty-placeholder-2.jpg',
-  },
-  {
-    subject: '수학',
-    name: '강사명',
-    tagline: '문제 읽는 태도와\n습관을 고쳐주는',
-    image: '/images/faculty-placeholder-3.jpg',
-  },
-  {
-    subject: '영어',
-    name: '강사명',
-    tagline: '영어를\n쉽고 정확하게',
-    image: '/images/faculty-placeholder-1.jpg',
-  },
-  {
-    subject: '영어',
-    name: '강사명',
-    tagline: '절대평가\n1등급 보장',
-    image: '/images/faculty-placeholder-2.jpg',
-  },
-  {
-    subject: '과학',
-    name: '강사명',
-    tagline: '개념부터\n실전까지',
-    image: '/images/faculty-placeholder-3.jpg',
-  },
-  {
-    subject: '국어',
-    name: '강사명',
-    tagline: '비문학\n만점 전략',
-    image: '/images/faculty-placeholder-1.jpg',
-  },
-  {
-    subject: '국어',
-    name: '강사명',
-    tagline: '문학,\n감각으로 읽다',
-    image: '/images/faculty-placeholder-2.jpg',
-  },
+  // 수학 (ㄱ~ㅎ)
+  { subject: '수학', name: '김경우', image: '/images/faculty/math-김경우.jpg' },
+  { subject: '수학', name: '김성환', image: '/images/faculty/math-김성환.jpg' },
+  { subject: '수학', name: '나정환', image: '/images/faculty/math-나정환.jpg' },
+  { subject: '수학', name: '박명신', image: '/images/faculty/math-박명신.jpg' },
+  { subject: '수학', name: '박주원', image: '/images/faculty/math-박주원.jpg' },
+  { subject: '수학', name: '이재원', image: '/images/faculty/math-이재원.jpg' },
+  { subject: '수학', name: '이희승', image: '/images/faculty/math-이희승.jpg' },
+  { subject: '수학', name: '조해공', image: '/images/faculty/math-조해공.jpg' },
+  { subject: '수학', name: '함성훈', image: '/images/faculty/math-함성훈.jpg' },
+  { subject: '수학', name: '허선영', image: '/images/faculty/math-허선영.jpg' },
+  // 영어
+  { subject: '영어', name: '양승경', image: '/images/faculty/eng-양승경.jpg' },
+  { subject: '영어', name: '양윤정', image: '/images/faculty/eng-양윤정.jpg' },
+  { subject: '영어', name: '이소희', image: '/images/faculty/eng-이소희.jpg' },
+  { subject: '영어', name: '이정헌', image: '/images/faculty/eng-이정헌.jpg' },
+  { subject: '영어', name: '정다운', image: '/images/faculty/eng-정다운.jpg' },
+  { subject: '영어', name: '조하늘', image: '/images/faculty/eng-조하늘.jpg' },
+  { subject: '영어', name: '최용우', image: '/images/faculty/eng-최용우.jpg' },
+  { subject: '영어', name: '박채원', image: '/images/faculty/eng-박채원.jpg' },
+  // 과학
+  { subject: '과학', name: '김응태', image: '/images/faculty/sci-김응태.jpg' },
+  { subject: '과학', name: '김현철', image: '/images/faculty/sci-김현철.jpg' },
+  // 국어
+  { subject: '국어', name: '고수민', image: '/images/faculty/kor-고수민.jpg' },
+  { subject: '국어', name: '석민지', image: '/images/faculty/kor-석민지.jpg' },
 ];
 
 const subjectColors: Record<string, string> = {
@@ -97,27 +75,22 @@ const subjectColors: Record<string, string> = {
       <div id="faculty-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
         {faculty.map((f) => (
           <div
-            class="faculty-card relative bg-gray-50 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+            class="faculty-card bg-gray-50 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
             data-subject={f.subject}
           >
-            <!-- 태그라인 -->
-            <div class="p-4 pb-0">
-              <p class="text-sm font-bold text-gray-900 leading-snug whitespace-pre-line">{f.tagline}</p>
-            </div>
-
             <!-- 강사 이미지 -->
-            <div class="relative mt-2 h-44">
+            <div class="relative h-52 bg-gray-200">
               <img
                 src={f.image}
                 alt={f.name}
-                class="absolute bottom-0 right-0 h-full w-full object-cover object-top"
+                class="w-full h-full object-cover object-top"
+                onerror="this.style.display='none'"
               />
-              <!-- 그라데이션 오버레이 -->
-              <div class="absolute inset-0 bg-gradient-to-t from-gray-50/60 via-transparent to-transparent"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
             </div>
 
             <!-- 과목 + 이름 -->
-            <div class="px-4 py-3 bg-gray-50">
+            <div class="px-4 py-3">
               <p class={`text-xs font-semibold mb-0.5 ${subjectColors[f.subject]}`}>{f.subject}</p>
               <p class="text-sm font-bold text-gray-900">{f.name} 선생님</p>
             </div>
