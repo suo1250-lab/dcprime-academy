@@ -24,10 +24,6 @@ const { title, description } = Astro.props;
     <ClientRouter />
   </head>
   <body class="font-sans text-gray-800 bg-white">
-    <!-- 커서 팔로워 -->
-    <div id="cursor-dot" class="pointer-events-none fixed z-[9999] rounded-full bg-brand" style="width:8px;height:8px;transform:translate(-50%,-50%);transition:opacity 0.3s;"></div>
-    <div id="cursor-ring" class="pointer-events-none fixed z-[9998] rounded-full border-2 border-brand/50" style="width:36px;height:36px;transform:translate(-50%,-50%);transition:opacity 0.3s;"></div>
-
     <Header />
     <main>
       <slot />
@@ -35,41 +31,31 @@ const { title, description } = Astro.props;
     <Footer />
 
     <script>
-      const dot  = document.getElementById('cursor-dot')!;
-      const ring = document.getElementById('cursor-ring')!;
-
-      let mx = 0, my = 0;
-      let rx = 0, ry = 0;
-
-      document.addEventListener('mousemove', (e) => {
-        mx = e.clientX;
-        my = e.clientY;
-        dot.style.left = mx + 'px';
-        dot.style.top  = my + 'px';
-      });
-
-      document.addEventListener('mouseleave', () => {
-        dot.style.opacity  = '0';
-        ring.style.opacity = '0';
-      });
-      document.addEventListener('mouseenter', () => {
-        dot.style.opacity  = '1';
-        ring.style.opacity = '1';
-      });
-
-      // 링은 easing으로 따라옴
-      function animate() {
-        rx += (mx - rx) * 0.12;
-        ry += (my - ry) * 0.12;
-        ring.style.left = rx + 'px';
-        ring.style.top  = ry + 'px';
-        requestAnimationFrame(animate);
+      function spawnTrail(x: number, y: number) {
+        const el = document.createElement('div');
+        el.style.cssText = `
+          position:fixed;left:${x}px;top:${y}px;
+          width:6px;height:6px;border-radius:50%;
+          background:rgba(116,123,162,0.6);
+          pointer-events:none;z-index:9999;
+          transform:translate(-50%,-50%);
+          transition:opacity 0.6s ease, transform 0.6s ease;
+        `;
+        document.body.appendChild(el);
+        requestAnimationFrame(() => {
+          el.style.opacity = '0';
+          el.style.transform = 'translate(-50%,-50%) scale(2)';
+        });
+        setTimeout(() => el.remove(), 600);
       }
-      animate();
 
-      // 클릭 시 링 살짝 커짐
-      document.addEventListener('mousedown', () => ring.style.transform = 'translate(-50%,-50%) scale(1.5)');
-      document.addEventListener('mouseup',   () => ring.style.transform = 'translate(-50%,-50%) scale(1)');
+      let last = 0;
+      document.addEventListener('mousemove', (e) => {
+        const now = Date.now();
+        if (now - last < 30) return;
+        last = now;
+        spawnTrail(e.clientX, e.clientY);
+      });
     </script>
   </body>
 </html>
