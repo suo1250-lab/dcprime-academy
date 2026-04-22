@@ -1,7 +1,11 @@
 ---
 import Layout from '../components/layout/Layout.astro';
 
-const levels = ['초등', '중등', '고등'];
+const levels = [
+  { label: '초등', id: 'elementary' },
+  { label: '중등', id: 'middle' },
+  { label: '고등', id: 'high' },
+];
 ---
 
 <Layout title="커리큘럼 - 대치프라임" description="대치프라임학원 커리큘럼을 안내합니다.">
@@ -19,11 +23,11 @@ const levels = ['초등', '중등', '고등'];
         <div class="flex">
           {levels.map((l, i) => (
             <button
-              data-tab={l}
+              data-tab={l.id}
               class={`cur-tab px-8 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap
                 ${i === 0 ? 'border-brand text-brand' : 'border-transparent text-gray-400 hover:text-gray-700'}`}
             >
-              {l}
+              {l.label}
             </button>
           ))}
         </div>
@@ -32,8 +36,8 @@ const levels = ['초등', '중등', '고등'];
 
     <div class="container mx-auto px-4 py-16 max-w-3xl">
       {levels.map((l, i) => (
-        <div id={`panel-${l}`} class={`cur-panel ${i !== 0 ? 'hidden' : ''}`}>
-          <h2 class="text-xl font-bold text-gray-900 mb-6">{l} 커리큘럼</h2>
+        <div id={`panel-${l.id}`} class={`cur-panel ${i !== 0 ? 'hidden' : ''}`}>
+          <h2 class="text-xl font-bold text-gray-900 mb-6">{l.label} 커리큘럼</h2>
           <div class="bg-gray-50 rounded-2xl p-10 text-center text-gray-400 text-sm">
             추후 업데이트 예정입니다.
           </div>
@@ -45,23 +49,29 @@ const levels = ['초등', '중등', '고등'];
 </Layout>
 
 <script>
-  const tabs = document.querySelectorAll<HTMLButtonElement>('.cur-tab');
-  const panels = document.querySelectorAll<HTMLElement>('.cur-panel');
+  function init() {
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.cur-tab');
+    const panels = document.querySelectorAll<HTMLElement>('.cur-panel');
 
-  function activate(id: string) {
-    tabs.forEach(t => {
-      const match = t.dataset.tab === id;
-      t.classList.toggle('border-brand', match);
-      t.classList.toggle('text-brand', match);
-      t.classList.toggle('border-transparent', !match);
-      t.classList.toggle('text-gray-400', !match);
-    });
-    panels.forEach(p => p.classList.add('hidden'));
-    document.getElementById(`panel-${id}`)?.classList.remove('hidden');
+    function activate(id: string) {
+      tabs.forEach(t => {
+        const match = t.dataset.tab === id;
+        t.classList.toggle('border-brand', match);
+        t.classList.toggle('text-brand', match);
+        t.classList.toggle('border-transparent', !match);
+        t.classList.toggle('text-gray-400', !match);
+      });
+      panels.forEach(p => p.classList.add('hidden'));
+      document.getElementById(`panel-${id}`)?.classList.remove('hidden');
+    }
+
+    tabs.forEach(tab => tab.addEventListener('click', () => activate(tab.dataset.tab!)));
+
+    const hashMap: Record<string, string> = { '초등': 'elementary', '중등': 'middle', '고등': 'high' };
+    const raw = decodeURIComponent(location.hash.replace('#', ''));
+    const hash = hashMap[raw] ?? raw;
+    if (hash) activate(hash);
   }
 
-  tabs.forEach(tab => tab.addEventListener('click', () => activate(tab.dataset.tab!)));
-
-  const hash = decodeURIComponent(location.hash.replace('#', ''));
-  if (hash) activate(hash);
+  document.addEventListener('astro:page-load', init);
 </script>
