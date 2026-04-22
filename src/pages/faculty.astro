@@ -1,10 +1,168 @@
 ---
 import Layout from '../components/layout/Layout.astro';
+
+const subjects = ['전체', '수학', '영어', '과학', '국어'];
+
+const faculty = [
+  {
+    subject: '수학',
+    name: '강사명',
+    tagline: '시작부터 끝까지\n수학은 누구나',
+    image: '/images/faculty-placeholder-1.jpg',
+  },
+  {
+    subject: '수학',
+    name: '강사명',
+    tagline: '수학,\n생각의 힘을\n키우다',
+    image: '/images/faculty-placeholder-2.jpg',
+  },
+  {
+    subject: '수학',
+    name: '강사명',
+    tagline: '문제 읽는 태도와\n습관을 고쳐주는',
+    image: '/images/faculty-placeholder-3.jpg',
+  },
+  {
+    subject: '영어',
+    name: '강사명',
+    tagline: '영어를\n쉽고 정확하게',
+    image: '/images/faculty-placeholder-1.jpg',
+  },
+  {
+    subject: '영어',
+    name: '강사명',
+    tagline: '절대평가\n1등급 보장',
+    image: '/images/faculty-placeholder-2.jpg',
+  },
+  {
+    subject: '과학',
+    name: '강사명',
+    tagline: '개념부터\n실전까지',
+    image: '/images/faculty-placeholder-3.jpg',
+  },
+  {
+    subject: '국어',
+    name: '강사명',
+    tagline: '비문학\n만점 전략',
+    image: '/images/faculty-placeholder-1.jpg',
+  },
+  {
+    subject: '국어',
+    name: '강사명',
+    tagline: '문학,\n감각으로 읽다',
+    image: '/images/faculty-placeholder-2.jpg',
+  },
+];
+
+const subjectColors: Record<string, string> = {
+  '수학': 'text-blue-500',
+  '영어': 'text-green-500',
+  '과학': 'text-orange-500',
+  '국어': 'text-brand',
+};
 ---
 
-<Layout title="강사소개 - 대치프라임" description="대치프라임학원 강사진을 소개합니다.">
-  <div class="container mx-auto px-4 py-16 min-h-screen">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">강사소개</h1>
-    <p class="text-gray-500">내용을 준비 중입니다.</p>
+<Layout title="강사소개 - 대치프라임" description="대치프라임 강사진을 소개합니다.">
+
+  <div class="min-h-screen bg-white">
+
+    <!-- 페이지 타이틀 -->
+    <div class="border-b border-gray-200 bg-white">
+      <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold text-gray-900">강사소개</h1>
+      </div>
+    </div>
+
+    <!-- 과목 탭 -->
+    <div class="sticky top-[65px] z-40 bg-white border-b border-gray-200">
+      <div class="container mx-auto px-4">
+        <div class="flex overflow-x-auto scrollbar-hide" id="subject-tabs">
+          {subjects.map((s) => (
+            <button
+              data-subject={s}
+              class={`subject-tab flex-shrink-0 px-6 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap
+                ${s === '전체'
+                  ? 'border-gray-900 text-gray-900'
+                  : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- 강사 그리드 -->
+    <div class="container mx-auto px-4 py-10">
+      <div id="faculty-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {faculty.map((f) => (
+          <div
+            class="faculty-card relative bg-gray-50 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+            data-subject={f.subject}
+          >
+            <!-- 태그라인 -->
+            <div class="p-4 pb-0">
+              <p class="text-sm font-bold text-gray-900 leading-snug whitespace-pre-line">{f.tagline}</p>
+            </div>
+
+            <!-- 강사 이미지 -->
+            <div class="relative mt-2 h-44">
+              <img
+                src={f.image}
+                alt={f.name}
+                class="absolute bottom-0 right-0 h-full w-full object-cover object-top"
+              />
+              <!-- 그라데이션 오버레이 -->
+              <div class="absolute inset-0 bg-gradient-to-t from-gray-50/60 via-transparent to-transparent"></div>
+            </div>
+
+            <!-- 과목 + 이름 -->
+            <div class="px-4 py-3 bg-gray-50">
+              <p class={`text-xs font-semibold mb-0.5 ${subjectColors[f.subject]}`}>{f.subject}</p>
+              <p class="text-sm font-bold text-gray-900">{f.name} 선생님</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- 데이터 없을 때 -->
+      <div id="empty-msg" class="hidden text-center py-20 text-gray-400 text-sm">
+        해당 과목 강사 정보를 준비 중입니다.
+      </div>
+    </div>
+
   </div>
 </Layout>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.subject-tab');
+  const cards = document.querySelectorAll<HTMLElement>('.faculty-card');
+  const emptyMsg = document.getElementById('empty-msg');
+
+  function filter(subject: string) {
+    let visible = 0;
+    cards.forEach(card => {
+      const match = subject === '전체' || card.dataset.subject === subject;
+      card.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    emptyMsg?.classList.toggle('hidden', visible > 0);
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => {
+        t.classList.remove('border-gray-900', 'text-gray-900');
+        t.classList.add('border-transparent', 'text-gray-500');
+      });
+      tab.classList.add('border-gray-900', 'text-gray-900');
+      tab.classList.remove('border-transparent', 'text-gray-500');
+      filter(tab.dataset.subject ?? '전체');
+    });
+  });
+</script>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>

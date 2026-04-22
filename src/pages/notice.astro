@@ -1,10 +1,54 @@
 ---
 import Layout from '../components/layout/Layout.astro';
+
+const notices = [
+  { id: 5, title: '2026 대치프라임 능곡관/장곡관 시간표 안내', date: '2026.04.18', views: 240 },
+  { id: 4, title: '[공지] 대치프라임 중간고사 특강 안내', date: '2026.04.09', views: 183 },
+  { id: 3, title: '2026 고입 합격현황', date: '2026.01.13', views: 97 },
+  { id: 2, title: '2026 대입 합격현황', date: '2026.01.26', views: 115 },
+  { id: 1, title: '[공지] 개인정보 처리방침 안내', date: '2025.09.01', views: 42 },
+];
 ---
 
-<Layout title="공지사항 - 대치프라임" description="대치프라임학원 공지사항입니다.">
-  <div class="container mx-auto px-4 py-16 min-h-screen">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">공지사항</h1>
-    <p class="text-gray-500">내용을 준비 중입니다.</p>
+<Layout title="공지사항 - 대치프라임" description="대치프라임 공지사항입니다.">
+  <div class="min-h-screen bg-white">
+    <div class="container mx-auto px-4 py-12 max-w-4xl">
+
+      <h1 class="text-3xl font-bold text-gray-900 mb-10">공지사항</h1>
+
+      <!-- 테이블 헤더 -->
+      <div class="grid grid-cols-[60px_1fr_110px_80px] text-sm text-gray-400 font-medium border-b border-gray-200 pb-3 mb-1 hidden md:grid">
+        <span>NO.</span>
+        <span>제목</span>
+        <span class="text-right">작성일</span>
+        <span class="text-right">조회수</span>
+      </div>
+
+      <!-- 공지 목록 -->
+      <ul>
+        {notices.map((n) => (
+          <li>
+            <a href={`/notice/${n.id}`} class="grid md:grid-cols-[60px_1fr_110px_80px] grid-cols-1 items-center py-5 border-b border-gray-100 hover:bg-gray-50 transition-colors gap-y-1 group">
+              <span class="text-sm text-gray-400 hidden md:block">{n.id}</span>
+              <span class="text-sm md:text-base font-medium text-gray-800 group-hover:text-brand transition-colors">
+                {n.title}
+              </span>
+              <span class="text-sm text-gray-400 md:text-right">
+                {n.date}
+              </span>
+              <span class="text-sm text-gray-400 md:text-right hidden md:block">
+                {n.views >= 9999 ? '9,999+' : n.views.toLocaleString()}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <!-- 빈 상태 -->
+      {notices.length === 0 && (
+        <div class="text-center py-24 text-gray-400 text-sm">등록된 공지사항이 없습니다.</div>
+      )}
+
+    </div>
   </div>
 </Layout>
