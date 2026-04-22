@@ -48,16 +48,20 @@ const levels = ['초등', '중등', '고등'];
   const tabs = document.querySelectorAll<HTMLButtonElement>('.cur-tab');
   const panels = document.querySelectorAll<HTMLElement>('.cur-panel');
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => {
-        t.classList.remove('border-brand', 'text-brand');
-        t.classList.add('border-transparent', 'text-gray-400');
-      });
-      tab.classList.add('border-brand', 'text-brand');
-      tab.classList.remove('border-transparent', 'text-gray-400');
-      panels.forEach(p => p.classList.add('hidden'));
-      document.getElementById(`panel-${tab.dataset.tab}`)?.classList.remove('hidden');
+  function activate(id: string) {
+    tabs.forEach(t => {
+      const match = t.dataset.tab === id;
+      t.classList.toggle('border-brand', match);
+      t.classList.toggle('text-brand', match);
+      t.classList.toggle('border-transparent', !match);
+      t.classList.toggle('text-gray-400', !match);
     });
-  });
+    panels.forEach(p => p.classList.add('hidden'));
+    document.getElementById(`panel-${id}`)?.classList.remove('hidden');
+  }
+
+  tabs.forEach(tab => tab.addEventListener('click', () => activate(tab.dataset.tab!)));
+
+  const hash = decodeURIComponent(location.hash.replace('#', ''));
+  if (hash) activate(hash);
 </script>
