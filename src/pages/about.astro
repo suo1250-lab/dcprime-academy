@@ -1,10 +1,84 @@
 ---
 import Layout from '../components/layout/Layout.astro';
+
+const sections = [
+  { id: 'greeting', label: '인사말' },
+  { id: 'history',  label: '학원연혁' },
+  { id: 'features', label: '학원 특징' },
+];
 ---
 
 <Layout title="학원소개 - 대치프라임" description="대치프라임학원을 소개합니다.">
-  <div class="container mx-auto px-4 py-16 min-h-screen">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">학원소개</h1>
-    <p class="text-gray-500">내용을 준비 중입니다.</p>
+  <div class="min-h-screen bg-white">
+
+    <div class="border-b border-gray-200">
+      <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold text-gray-900">학원소개</h1>
+      </div>
+    </div>
+
+    <!-- 탭 -->
+    <div class="sticky top-[65px] z-40 bg-white border-b border-gray-200">
+      <div class="container mx-auto px-4">
+        <div class="flex">
+          {sections.map((s, i) => (
+            <button
+              data-tab={s.id}
+              class={`about-tab px-6 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap
+                ${i === 0 ? 'border-brand text-brand' : 'border-transparent text-gray-400 hover:text-gray-700'}`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-16 max-w-3xl">
+
+      <!-- 인사말 -->
+      <div id="panel-greeting" class="about-panel">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">인사말</h2>
+        <div class="bg-gray-50 rounded-2xl p-10 text-center text-gray-400 text-sm">
+          추후 업데이트 예정입니다.
+        </div>
+      </div>
+
+      <!-- 학원연혁 -->
+      <div id="panel-history" class="about-panel hidden">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">학원연혁</h2>
+        <div class="bg-gray-50 rounded-2xl p-10 text-center text-gray-400 text-sm">
+          추후 업데이트 예정입니다.
+        </div>
+      </div>
+
+      <!-- 학원 특징 -->
+      <div id="panel-features" class="about-panel hidden">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">학원 특징</h2>
+        <div class="bg-gray-50 rounded-2xl p-10 text-center text-gray-400 text-sm">
+          추후 업데이트 예정입니다.
+        </div>
+      </div>
+
+    </div>
   </div>
 </Layout>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.about-tab');
+  const panels = document.querySelectorAll<HTMLElement>('.about-panel');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => {
+        t.classList.remove('border-brand', 'text-brand');
+        t.classList.add('border-transparent', 'text-gray-400');
+      });
+      tab.classList.add('border-brand', 'text-brand');
+      tab.classList.remove('border-transparent', 'text-gray-400');
+
+      panels.forEach(p => p.classList.add('hidden'));
+      document.getElementById(`panel-${tab.dataset.tab}`)?.classList.remove('hidden');
+    });
+  });
+</script>
