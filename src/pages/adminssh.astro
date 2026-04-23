@@ -1,0 +1,255 @@
+---
+import Layout from '../components/layout/Layout.astro';
+---
+
+<Layout title="관리자 - 대치프라임" description="">
+  <div class="min-h-screen bg-gray-100">
+
+    <!-- 로그인 화면 -->
+    <div id="login-screen" class="flex items-center justify-center min-h-screen">
+      <div class="bg-white rounded-2xl shadow-lg p-10 w-full max-w-sm">
+        <h1 class="text-xl font-bold text-gray-900 mb-6 text-center">관리자 로그인</h1>
+        <input id="admin-pw" type="password" placeholder="비밀번호" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-3 focus:outline-none focus:border-brand" />
+        <p id="login-error" class="text-red-500 text-xs mb-3 hidden">비밀번호가 틀렸습니다.</p>
+        <button id="login-btn" class="w-full bg-brand text-white rounded-lg py-3 text-sm font-semibold hover:opacity-90 transition-opacity">로그인</button>
+      </div>
+    </div>
+
+    <!-- 관리자 패널 -->
+    <div id="admin-panel" class="hidden">
+      <div class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h1 class="text-lg font-bold text-gray-900">대치프라임 관리자</h1>
+        <button id="logout-btn" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">로그아웃</button>
+      </div>
+
+      <!-- 탭 -->
+      <div class="bg-white border-b border-gray-200 px-6">
+        <div class="flex gap-6">
+          <button data-tab="notices" class="admin-tab py-3 text-sm font-medium border-b-2 border-brand text-brand">공지사항 관리</button>
+          <button data-tab="inquiries" class="admin-tab py-3 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-gray-700">상담 신청 목록</button>
+        </div>
+      </div>
+
+      <div class="max-w-4xl mx-auto px-4 py-8">
+
+        <!-- 공지사항 탭 -->
+        <div id="panel-notices">
+          <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+            <h2 id="form-title" class="text-base font-bold text-gray-900 mb-4">새 공지 작성</h2>
+            <input id="notice-title-input" type="text" placeholder="제목" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-3 focus:outline-none focus:border-brand" />
+            <textarea id="notice-body-input" placeholder="내용" rows="8" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-3 focus:outline-none focus:border-brand resize-none"></textarea>
+            <div class="flex items-center gap-3">
+              <button id="submit-notice-btn" class="bg-brand text-white rounded-lg px-6 py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity">등록</button>
+              <button id="cancel-edit-btn" class="hidden border border-gray-300 text-gray-600 rounded-lg px-6 py-2.5 text-sm font-semibold hover:bg-gray-50 transition-colors">취소</button>
+              <p id="notice-msg" class="text-sm text-gray-500 hidden"></p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-sm p-6">
+            <h2 class="text-base font-bold text-gray-900 mb-4">공지 목록</h2>
+            <div id="notice-list" class="divide-y divide-gray-100">
+              <p class="text-sm text-gray-400 py-4 text-center">불러오는 중...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 상담 신청 탭 -->
+        <div id="panel-inquiries" class="hidden">
+          <div class="bg-white rounded-2xl shadow-sm p-6">
+            <h2 class="text-base font-bold text-gray-900 mb-4">상담 신청 목록</h2>
+            <div id="inquiry-list" class="divide-y divide-gray-100">
+              <p class="text-sm text-gray-400 py-4 text-center">불러오는 중...</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../lib/supabase';
+
+  const SESSION_KEY = 'dcprime_admin';
+
+  function isLoggedIn() {
+    return sessionStorage.getItem(SESSION_KEY) === 'ok';
+  }
+
+  function showPanel() {
+    document.getElementById('login-screen')!.classList.add('hidden');
+    document.getElementById('admin-panel')!.classList.remove('hidden');
+    loadNotices();
+    loadInquiries();
+  }
+
+  function showLogin() {
+    document.getElementById('login-screen')!.classList.remove('hidden');
+    document.getElementById('admin-panel')!.classList.add('hidden');
+  }
+
+  // 로그인
+  document.getElementById('login-btn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('login-btn') as HTMLButtonElement;
+    const pw = (document.getElementById('admin-pw') as HTMLInputElement).value;
+    btn.disabled = true;
+    btn.textContent = '확인 중...';
+
+    const { data, error } = await supabase.rpc('verify_admin_password', { pw });
+
+    btn.disabled = false;
+    btn.textContent = '로그인';
+
+    if (!error && data === true) {
+      sessionStorage.setItem(SESSION_KEY, 'ok');
+      document.getElementById('login-error')!.classList.add('hidden');
+      showPanel();
+    } else {
+      document.getElementById('login-error')!.classList.remove('hidden');
+    }
+  });
+
+  document.getElementById('admin-pw')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') (document.getElementById('login-btn') as HTMLButtonElement).click();
+  });
+
+  // 로그아웃
+  document.getElementById('logout-btn')?.addEventListener('click', () => {
+    sessionStorage.removeItem(SESSION_KEY);
+    showLogin();
+  });
+
+  // 탭
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.admin-tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => {
+        t.classList.remove('border-brand', 'text-brand');
+        t.classList.add('border-transparent', 'text-gray-400');
+      });
+      tab.classList.add('border-brand', 'text-brand');
+      tab.classList.remove('border-transparent', 'text-gray-400');
+
+      document.getElementById('panel-notices')!.classList.add('hidden');
+      document.getElementById('panel-inquiries')!.classList.add('hidden');
+      document.getElementById(`panel-${tab.dataset.tab}`)!.classList.remove('hidden');
+    });
+  });
+
+  let editingId: string | null = null;
+
+  function resetForm() {
+    editingId = null;
+    (document.getElementById('notice-title-input') as HTMLInputElement).value = '';
+    (document.getElementById('notice-body-input') as HTMLTextAreaElement).value = '';
+    document.getElementById('form-title')!.textContent = '새 공지 작성';
+    document.getElementById('submit-notice-btn')!.textContent = '등록';
+    document.getElementById('cancel-edit-btn')!.classList.add('hidden');
+  }
+
+  function startEdit(id: string, title: string, content: string) {
+    editingId = id;
+    (document.getElementById('notice-title-input') as HTMLInputElement).value = title;
+    (document.getElementById('notice-body-input') as HTMLTextAreaElement).value = content;
+    document.getElementById('form-title')!.textContent = '공지 수정';
+    document.getElementById('submit-notice-btn')!.textContent = '수정 완료';
+    document.getElementById('cancel-edit-btn')!.classList.remove('hidden');
+    document.getElementById('notice-title-input')!.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  document.getElementById('cancel-edit-btn')?.addEventListener('click', resetForm);
+
+  // 공지 등록 / 수정
+  document.getElementById('submit-notice-btn')?.addEventListener('click', async () => {
+    const title = (document.getElementById('notice-title-input') as HTMLInputElement).value.trim();
+    const content = (document.getElementById('notice-body-input') as HTMLTextAreaElement).value.trim();
+    const msg = document.getElementById('notice-msg')!;
+    if (!title || !content) { msg.textContent = '제목과 내용을 입력하세요.'; msg.classList.remove('hidden'); return; }
+
+    let error;
+    if (editingId) {
+      ({ error } = await supabase.from('notices').update({ title, content }).eq('id', editingId));
+    } else {
+      ({ error } = await supabase.from('notices').insert({ title, content, views: 0 }));
+    }
+
+    if (error) {
+      msg.textContent = '오류: ' + error.message;
+    } else {
+      msg.textContent = editingId ? '수정되었습니다.' : '등록되었습니다.';
+      resetForm();
+      loadNotices();
+    }
+    msg.classList.remove('hidden');
+    setTimeout(() => msg.classList.add('hidden'), 3000);
+  });
+
+  // 공지 목록 로드
+  async function loadNotices() {
+    const container = document.getElementById('notice-list')!;
+    const { data, error } = await supabase.from('notices').select('*').order('created_at', { ascending: false }).limit(50);
+    if (error || !data || data.length === 0) {
+      container.innerHTML = '<p class="text-sm text-gray-400 py-4 text-center">공지사항이 없습니다.</p>';
+      return;
+    }
+    container.innerHTML = data.map(n => `
+      <div class="py-4 flex items-start justify-between gap-4">
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900 truncate">${escHtml(n.title)}</p>
+          <p class="text-xs text-gray-400 mt-1">${new Date(n.created_at).toLocaleDateString('ko-KR')} · 조회 ${(n.views ?? 0).toLocaleString()}</p>
+        </div>
+        <div class="flex items-center gap-3 flex-shrink-0">
+          <button data-id="${n.id}" data-title="${escHtml(n.title)}" data-content="${escHtml(n.content ?? '')}" class="edit-notice-btn text-xs text-blue-400 hover:text-blue-600 transition-colors">수정</button>
+          <button data-id="${n.id}" class="del-notice-btn text-xs text-red-400 hover:text-red-600 transition-colors">삭제</button>
+        </div>
+      </div>
+    `).join('');
+
+    container.querySelectorAll<HTMLButtonElement>('.edit-notice-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        startEdit(btn.dataset.id!, btn.dataset.title!, btn.dataset.content!);
+      });
+    });
+
+    container.querySelectorAll<HTMLButtonElement>('.del-notice-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('이 공지를 삭제할까요?')) return;
+        await supabase.from('notices').delete().eq('id', btn.dataset.id!);
+        loadNotices();
+      });
+    });
+  }
+
+  // 상담 신청 목록 로드
+  async function loadInquiries() {
+    const container = document.getElementById('inquiry-list')!;
+    const { data, error } = await supabase.from('inquiries').select('*').order('created_at', { ascending: false }).limit(100);
+    if (error || !data || data.length === 0) {
+      container.innerHTML = '<p class="text-sm text-gray-400 py-4 text-center">상담 신청이 없습니다.</p>';
+      return;
+    }
+    container.innerHTML = data.map(q => `
+      <div class="py-4">
+        <div class="flex items-center justify-between mb-1">
+          <p class="text-sm font-medium text-gray-900">${escHtml(q.name)} · ${escHtml(q.phone)}</p>
+          <p class="text-xs text-gray-400">${new Date(q.created_at).toLocaleDateString('ko-KR')}</p>
+        </div>
+        ${q.student_grade ? `<p class="text-xs text-gray-500 mb-1">학년: ${escHtml(q.student_grade)}</p>` : ''}
+        ${q.subject ? `<p class="text-xs text-gray-500 mb-1">과목: ${escHtml(q.subject)}</p>` : ''}
+        ${q.message ? `<p class="text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2 mt-2 whitespace-pre-wrap">${escHtml(q.message)}</p>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function escHtml(str: string) {
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // 초기화
+  document.addEventListener('astro:page-load', () => {
+    if (isLoggedIn()) showPanel();
+    else showLogin();
+  });
+</script>
