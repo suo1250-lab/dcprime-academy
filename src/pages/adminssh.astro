@@ -231,19 +231,31 @@ import Layout from '../components/layout/Layout.astro';
       return;
     }
     container.innerHTML = data.map(q => `
-      <div class="py-4">
+      <div class="py-4 ${q.contacted ? 'opacity-50' : ''}">
         <div class="flex items-center justify-between mb-1">
           <p class="text-sm font-medium text-gray-900">${escHtml(q.student_name ?? q.name ?? '')} · ${escHtml(q.student_phone ?? q.phone ?? '')}</p>
-          <p class="text-xs text-gray-400">${new Date(q.created_at).toLocaleDateString('ko-KR')}</p>
+          <div class="flex items-center gap-3">
+            <label class="flex items-center gap-1.5 cursor-pointer select-none">
+              <input type="checkbox" data-id="${q.id}" class="contacted-check w-4 h-4 accent-brand" ${q.contacted ? 'checked' : ''} />
+              <span class="text-xs ${q.contacted ? 'text-brand font-medium' : 'text-gray-400'}">연락 완료</span>
+            </label>
+            <p class="text-xs text-gray-400">${new Date(q.created_at).toLocaleDateString('ko-KR')}</p>
+          </div>
         </div>
         ${q.parent_name ? `<p class="text-xs text-gray-500 mb-1">학부모: ${escHtml(q.parent_name)} · ${escHtml(q.parent_phone ?? '')}</p>` : ''}
-        ${q.school_name ? `<p class="text-xs text-gray-500 mb-1">학교: ${escHtml(q.school_name)}</p>` : ''}
+        ${q.school ? `<p class="text-xs text-gray-500 mb-1">학교: ${escHtml(q.school)}</p>` : ''}
         ${(q.track || q.grade) ? `<p class="text-xs text-gray-500 mb-1">${q.track ? '계열: ' + escHtml(q.track) : ''} ${q.grade ? '학년: ' + escHtml(q.grade) : ''}</p>` : ''}
         ${q.branch?.length ? `<p class="text-xs text-gray-500 mb-1">분원: ${escHtml(Array.isArray(q.branch) ? q.branch.join(', ') : q.branch)}</p>` : ''}
-        ${q.student_grade ? `<p class="text-xs text-gray-500 mb-1">학년: ${escHtml(q.student_grade)}</p>` : ''}
         ${q.message ? `<p class="text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2 mt-2 whitespace-pre-wrap">${escHtml(q.message)}</p>` : ''}
       </div>
     `).join('');
+
+    container.querySelectorAll<HTMLInputElement>('.contacted-check').forEach(cb => {
+      cb.addEventListener('change', async () => {
+        await supabase.from('inquiries').update({ contacted: cb.checked }).eq('id', cb.dataset.id!);
+        loadInquiries();
+      });
+    });
   }
 
   function escHtml(str: string) {
