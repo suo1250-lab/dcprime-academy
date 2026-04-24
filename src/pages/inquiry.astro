@@ -174,7 +174,7 @@ import Layout from '../components/layout/Layout.astro';
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '처리 중...'; }
 
     const fd = new FormData(form);
-    const branches = (fd.getAll('branch') as string[]).join(', ');
+    const branches = fd.getAll('branch') as string[];
     const studentPhone = `${fd.get('student_phone_prefix')}-${fd.get('student_phone_mid')}-${fd.get('student_phone_end')}`;
     const parentPhoneMid = fd.get('parent_phone_mid') as string;
     const parentPhone = parentPhoneMid
@@ -186,10 +186,10 @@ import Layout from '../components/layout/Layout.astro';
       student_phone: studentPhone,
       parent_name: (fd.get('parent_name') as string) || null,
       parent_phone: parentPhone,
-      school_name: (fd.get('school_name') as string) || null,
+      school: (fd.get('school_name') as string) || null,
       track: (fd.get('track') as string) || null,
       grade: (fd.get('grade') as string) || null,
-      branch: branches || null,
+      branch: branches.length > 0 ? branches : null,
       agree_privacy: fd.get('agree_privacy') === 'on',
       agree_marketing: fd.get('agree_marketing') === 'on',
     });

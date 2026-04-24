@@ -239,7 +239,7 @@ import Layout from '../components/layout/Layout.astro';
         ${q.parent_name ? `<p class="text-xs text-gray-500 mb-1">학부모: ${escHtml(q.parent_name)} · ${escHtml(q.parent_phone ?? '')}</p>` : ''}
         ${q.school_name ? `<p class="text-xs text-gray-500 mb-1">학교: ${escHtml(q.school_name)}</p>` : ''}
         ${(q.track || q.grade) ? `<p class="text-xs text-gray-500 mb-1">${q.track ? '계열: ' + escHtml(q.track) : ''} ${q.grade ? '학년: ' + escHtml(q.grade) : ''}</p>` : ''}
-        ${q.branch ? `<p class="text-xs text-gray-500 mb-1">분원: ${escHtml(q.branch)}</p>` : ''}
+        ${q.branch?.length ? `<p class="text-xs text-gray-500 mb-1">분원: ${escHtml(Array.isArray(q.branch) ? q.branch.join(', ') : q.branch)}</p>` : ''}
         ${q.student_grade ? `<p class="text-xs text-gray-500 mb-1">학년: ${escHtml(q.student_grade)}</p>` : ''}
         ${q.message ? `<p class="text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2 mt-2 whitespace-pre-wrap">${escHtml(q.message)}</p>` : ''}
       </div>
