@@ -28,6 +28,9 @@ const { id } = Astro.params;
           <span>조회수 <span id="notice-views"></span></span>
         </div>
 
+        <div id="notice-image-wrap" class="hidden mb-8">
+          <img id="notice-image" src="" alt="" class="w-full rounded-xl border border-gray-100 object-contain max-h-[500px]" />
+        </div>
         <div id="notice-body" class="text-gray-700 leading-relaxed whitespace-pre-wrap min-h-[200px]"></div>
 
         <div class="mt-12 pt-6 border-t border-gray-200 text-center">
@@ -75,6 +78,11 @@ const { id } = Astro.params;
       .toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
     document.getElementById('notice-views')!.textContent = ((data.views ?? 0) + 1).toLocaleString();
     document.getElementById('notice-body')!.textContent = data.content ?? '내용이 없습니다.';
+    if (data.image_url) {
+      const img = document.getElementById('notice-image') as HTMLImageElement;
+      img.src = data.image_url;
+      document.getElementById('notice-image-wrap')?.classList.remove('hidden');
+    }
     document.getElementById('notice-content')?.classList.remove('hidden');
     document.title = `${data.title} - 대치프라임`;
   }
