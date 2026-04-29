@@ -37,16 +37,12 @@ import Layout from '../components/layout/Layout.astro';
           <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
             <h2 id="form-title" class="text-base font-bold text-gray-900 mb-4">새 공지 작성</h2>
             <input id="notice-title-input" type="text" placeholder="제목" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-3 focus:outline-none focus:border-brand" />
-            <textarea id="notice-body-input" placeholder="내용" rows="8" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-3 focus:outline-none focus:border-brand resize-none"></textarea>
-            <!-- 이미지 업로드 -->
-            <div class="mb-3">
-              <label class="block text-xs font-medium text-gray-500 mb-1.5">이미지 첨부 (선택)</label>
-              <input id="notice-image-input" type="file" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" />
-              <div id="image-preview-wrap" class="hidden mt-2">
-                <img id="image-preview" src="" alt="" class="max-h-40 rounded-lg border border-gray-200 object-contain" />
-                <button id="remove-image-btn" class="mt-1 text-xs text-red-400 hover:text-red-600">이미지 제거</button>
-              </div>
+
+            <!-- Quill 에디터 영역 -->
+            <div class="mb-3 border border-gray-300 rounded-lg overflow-hidden">
+              <div id="quill-editor"></div>
             </div>
+
             <div class="flex items-center gap-3">
               <button id="submit-notice-btn" class="bg-brand text-white rounded-lg px-6 py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity">등록</button>
               <button id="cancel-edit-btn" class="hidden border border-gray-300 text-gray-600 rounded-lg px-6 py-2.5 text-sm font-semibold hover:bg-gray-50 transition-colors">취소</button>
@@ -78,10 +74,33 @@ import Layout from '../components/layout/Layout.astro';
   </div>
 </Layout>
 
+<style is:global>
+  /* Quill 에디터 스타일 커스텀 */
+  #quill-editor .ql-editor {
+    min-height: 250px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+  #quill-editor .ql-toolbar {
+    border: none;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+  }
+  #quill-editor .ql-container {
+    border: none;
+  }
+  #quill-editor .ql-editor img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 8px 0;
+  }
+</style>
+
 <script>
   import { supabase } from '../lib/supabase';
 
   const SESSION_KEY = 'dcprime_admin';
+  let quill: any = null;
 
   function isLoggedIn() {
     return sessionStorage.getItem(SESSION_KEY) === 'ok';
@@ -97,6 +116,74 @@ import Layout from '../components/layout/Layout.astro';
   function showLogin() {
     document.getElementById('login-screen')!.classList.remove('hidden');
     document.getElementById('admin-panel')!.classList.add('hidden');
+  }
+
+  // Quill 동적 로드
+  async function loadQuill() {
+    if ((window as any).Quill) return;
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css';
+    document.head.appendChild(link);
+
+    await new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js';
+      script.onload = () => resolve();
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  // Quill 이미지 핸들러: Supabase Storage에 업로드 후 에디터에 삽입
+  function imageHandler() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file || !quill) return;
+
+      const ext = file.name.split('.').pop();
+      const path = `${Date.now()}.${ext}`;
+
+      const { data, error } = await supabase.storage
+        .from('notice-images')
+        .upload(path, file, { upsert: true });
+
+      if (!error && data) {
+        const { data: urlData } = supabase.storage.from('notice-images').getPublicUrl(path);
+        const range = quill.getSelection(true);
+        quill.insertEmbed(range.index, 'image', urlData.publicUrl);
+        quill.setSelection(range.index + 1);
+      }
+    };
+  }
+
+  // Quill 초기화
+  function initQuill() {
+    if (quill) return;
+    const Quill = (window as any).Quill;
+    quill = new Quill('#quill-editor', {
+      theme: 'snow',
+      modules: {
+        toolbar: {
+          container: [
+            [{ header: [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline'],
+            [{ color: [] }],
+            [{ align: [] }],
+            ['link', 'image'],
+            ['clean'],
+          ],
+          handlers: { image: imageHandler },
+        },
+      },
+      placeholder: '내용을 입력하세요. 이미지는 툴바의 🖼 버튼으로 원하는 위치에 삽입하세요.',
+    });
   }
 
   // 로그인
@@ -148,49 +235,22 @@ import Layout from '../components/layout/Layout.astro';
   });
 
   let editingId: string | null = null;
-  let currentImageUrl: string | null = null;
-
-  // 이미지 미리보기
-  const imageInput = document.getElementById('notice-image-input') as HTMLInputElement;
-  const imagePreviewWrap = document.getElementById('image-preview-wrap')!;
-  const imagePreview = document.getElementById('image-preview') as HTMLImageElement;
-
-  imageInput?.addEventListener('change', () => {
-    const file = imageInput.files?.[0];
-    if (file) {
-      imagePreview.src = URL.createObjectURL(file);
-      imagePreviewWrap.classList.remove('hidden');
-    }
-  });
-
-  document.getElementById('remove-image-btn')?.addEventListener('click', () => {
-    imageInput.value = '';
-    imagePreview.src = '';
-    imagePreviewWrap.classList.add('hidden');
-    currentImageUrl = null;
-  });
 
   function resetForm() {
     editingId = null;
-    currentImageUrl = null;
     (document.getElementById('notice-title-input') as HTMLInputElement).value = '';
-    (document.getElementById('notice-body-input') as HTMLTextAreaElement).value = '';
-    imageInput.value = '';
-    imagePreview.src = '';
-    imagePreviewWrap.classList.add('hidden');
+    if (quill) quill.setContents([]);
     document.getElementById('form-title')!.textContent = '새 공지 작성';
     document.getElementById('submit-notice-btn')!.textContent = '등록';
     document.getElementById('cancel-edit-btn')!.classList.add('hidden');
   }
 
-  function startEdit(id: string, title: string, content: string, imageUrl: string | null) {
+  function startEdit(id: string, title: string, content: string) {
     editingId = id;
-    currentImageUrl = imageUrl;
     (document.getElementById('notice-title-input') as HTMLInputElement).value = title;
-    (document.getElementById('notice-body-input') as HTMLTextAreaElement).value = content;
-    if (imageUrl) {
-      imagePreview.src = imageUrl;
-      imagePreviewWrap.classList.remove('hidden');
+    if (quill) {
+      const delta = quill.clipboard.convert({ html: content });
+      quill.setContents(delta);
     }
     document.getElementById('form-title')!.textContent = '공지 수정';
     document.getElementById('submit-notice-btn')!.textContent = '수정 완료';
@@ -203,34 +263,25 @@ import Layout from '../components/layout/Layout.astro';
   // 공지 등록 / 수정
   document.getElementById('submit-notice-btn')?.addEventListener('click', async () => {
     const title = (document.getElementById('notice-title-input') as HTMLInputElement).value.trim();
-    const content = (document.getElementById('notice-body-input') as HTMLTextAreaElement).value.trim();
+    const content = quill ? quill.root.innerHTML : '';
+    const isEmpty = !quill || quill.getText().trim() === '';
     const msg = document.getElementById('notice-msg')!;
-    if (!title || !content) { msg.textContent = '제목과 내용을 입력하세요.'; msg.classList.remove('hidden'); return; }
+
+    if (!title || isEmpty) {
+      msg.textContent = '제목과 내용을 입력하세요.';
+      msg.classList.remove('hidden');
+      return;
+    }
 
     const btn = document.getElementById('submit-notice-btn') as HTMLButtonElement;
     btn.disabled = true;
     btn.textContent = '처리 중...';
 
-    // 이미지 업로드
-    let image_url = currentImageUrl;
-    const file = imageInput.files?.[0];
-    if (file) {
-      const ext = file.name.split('.').pop();
-      const path = `${Date.now()}.${ext}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('notice-images')
-        .upload(path, file, { upsert: true });
-      if (!uploadError && uploadData) {
-        const { data: urlData } = supabase.storage.from('notice-images').getPublicUrl(path);
-        image_url = urlData.publicUrl;
-      }
-    }
-
     let error;
     if (editingId) {
-      ({ error } = await supabase.from('notices').update({ title, content, image_url }).eq('id', editingId));
+      ({ error } = await supabase.from('notices').update({ title, content }).eq('id', editingId));
     } else {
-      ({ error } = await supabase.from('notices').insert({ title, content, image_url, views: 0 }));
+      ({ error } = await supabase.from('notices').insert({ title, content, views: 0 }));
     }
 
     btn.disabled = false;
@@ -262,7 +313,7 @@ import Layout from '../components/layout/Layout.astro';
           <p class="text-xs text-gray-400 mt-1">${new Date(n.created_at).toLocaleDateString('ko-KR')} · 조회 ${(n.views ?? 0).toLocaleString()}</p>
         </div>
         <div class="flex items-center gap-3 flex-shrink-0">
-          <button data-id="${n.id}" data-title="${escHtml(n.title)}" data-content="${escHtml(n.content ?? '')}" data-image="${escHtml(n.image_url ?? '')}" class="edit-notice-btn text-xs text-blue-400 hover:text-blue-600 transition-colors">수정</button>
+          <button data-id="${n.id}" data-title="${escAttr(n.title)}" data-content="${escAttr(n.content ?? '')}" class="edit-notice-btn text-xs text-blue-400 hover:text-blue-600 transition-colors">수정</button>
           <button data-id="${n.id}" class="del-notice-btn text-xs text-red-400 hover:text-red-600 transition-colors">삭제</button>
         </div>
       </div>
@@ -270,7 +321,7 @@ import Layout from '../components/layout/Layout.astro';
 
     container.querySelectorAll<HTMLButtonElement>('.edit-notice-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        startEdit(btn.dataset.id!, btn.dataset.title!, btn.dataset.content!, btn.dataset.image || null);
+        startEdit(btn.dataset.id!, btn.dataset.title!, btn.dataset.content!);
       });
     });
 
@@ -323,9 +374,16 @@ import Layout from '../components/layout/Layout.astro';
     return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  // data-* 속성에 HTML 내용을 안전하게 넣기 위한 인코딩
+  function escAttr(str: string) {
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  }
+
   // 초기화
-  document.addEventListener('astro:page-load', () => {
-    if (!document.getElementById('login-screen')) return; // 관리자 페이지가 아니면 무시
+  document.addEventListener('astro:page-load', async () => {
+    if (!document.getElementById('login-screen')) return;
+    await loadQuill();
+    initQuill();
     if (isLoggedIn()) showPanel();
     else showLogin();
   });
